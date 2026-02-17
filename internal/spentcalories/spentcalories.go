@@ -22,15 +22,21 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	// TODO: реализовать функцию
 	slice := strings.Split(data, ",")
 	if len(slice) != 3 {
-		return 0, "", 0, nil
+		return 0, "", 0, errors.New("длина слайса не равна 3")
 	}
 	steps, err := strconv.Atoi(slice[0])
 	if err != nil {
 		return 0, "", 0, err
 	}
+	if steps <= 0 {
+		return 0, "", 0, errors.New("кол-во шагов должы быть положительными")
+	}
 	duration, err := time.ParseDuration(slice[2])
 	if err != nil {
 		return 0, "", 0, err
+	}
+	if duration <= 0 {
+		return 0, "", 0, errors.New("время должно быть положительным")
 	}
 	return steps, slice[1], duration, nil
 }
@@ -62,13 +68,13 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		walkDistance := distance(steps, height)
 		walkAverageSpeed := meanSpeed(steps, height, duration)
 		walkCalories, _ := WalkingSpentCalories(steps, weight, height, duration)
-		message := fmt.Sprintf("Тип тренировки: %s \nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f/n", typeActivity, duration.Hours(), walkDistance, walkAverageSpeed, walkCalories)
+		message := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", typeActivity, duration.Hours(), walkDistance, walkAverageSpeed, walkCalories)
 		return message, nil
 	case "Бег":
 		runDistance := distance(steps, height)
 		runAverageSpeed := meanSpeed(steps, height, duration)
 		runCalories, _ := RunningSpentCalories(steps, weight, height, duration)
-		message := fmt.Sprintf("Тип тренировки: %s \nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", typeActivity, duration.Hours(), runDistance, runAverageSpeed, runCalories)
+		message := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n", typeActivity, duration.Hours(), runDistance, runAverageSpeed, runCalories)
 		return message, nil
 	}
 	return "", errors.New("неизвестный тип тренировки")
